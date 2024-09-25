@@ -1,7 +1,8 @@
 module.exports = {
   apps : [{
-    name: "bot",
+    name: 'bot',
     script: 'dist/index.js',
-    watch: 'dist'
+    watch: ['dist'],
+    time: true,
   }]
 };
