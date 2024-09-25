@@ -65,16 +65,6 @@ function canParse(message: any) {
 	;
 }
 
-function getInfo(message: any) {
-	const now = new Date();
-	return {
-		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]|пятниц.?', 'i')).test(message.text),
-		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
-		oleg: (new RegExp('^олег$', 'i')).test(message.text),
-		friday: now.getDay() === 5,
-	};
-}
-
 function skipBoobs() {
 	const vars = [
 		'Сегодня не пятница.',
@@ -193,6 +183,16 @@ function oleg() {
 		'🏋🏿‍♂️',
 	];
 	return vars[Math.floor(Math.random() * vars.length)];
+}
+
+function getInfo(message: any) {
+	const now = new Date();
+	return {
+		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]|пятниц.?', 'i')).test(message.text),
+		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
+		oleg: (new RegExp('^олег$', 'i')).test(message.text),
+		friday: now.getDay() === 5,
+	};
 }
 
 function processing(message: any) {
