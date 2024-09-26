@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import * as util from 'util';
 
 dotenv.config();
 
@@ -65,13 +66,24 @@ function canParse(message: any) {
 	;
 }
 
+function skipFriday() {
+	const vars = [
+		'Сегодня не пятница.',
+		'╭∩╮( •̀_•́ )╭∩╮',
+		'¯\\_(ツ)_/¯',
+		'╮ (. ❛ ᴗ ❛.) ╭',
+		'👅',
+	];
+	return vars[Math.floor(Math.random() * vars.length)];
+}
+
 function skipBoobs() {
 	const vars = [
 		'Сегодня не пятница.',
 		'Сегодня сисек не завезли. Заходите в пятницу.',
 		'В пятницу получишь.',
 		'╭∩╮( •̀_•́ )╭∩╮',
-		'¯\_(ツ)_/¯',
+		'¯\\_(ツ)_/¯',
 		'╮ (. ❛ ᴗ ❛.) ╭',
 		'👅',
 		'(＾◡＾)っ✂╰⋃╯',
@@ -156,7 +168,7 @@ function butts() {
 		'(_->._) - Иди в жопу!',
 		//'к(_!_)Э - жопа с ушами',
 		'c( o ) - жопа с ручкой',
-		'(_!_)(___!___)(_!_)(__!__) - Кинотеатр...',
+		'(_!_)(___!___)(_!_)(__!__) - Ронины на построении...',
 	];
 	return vars[Math.floor(Math.random() * vars.length)];
 }
@@ -187,11 +199,19 @@ function oleg() {
 
 function getInfo(message: any) {
 	const now = new Date();
+
+	// TODO реагировать на упоминание
+	/*
+	0|bot  | 2024-09-25T19:11:30:     text: '@Ronin37Bot ок',
+	0|bot  | 2024-09-25T19:11:30:     entities: [ { offset: 0, length: 11, type: 'mention' }, [length]: 1 ]
+	*/
+
 	return {
-		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]|пятниц.?', 'i')).test(message.text),
+		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(message.text),
+		friday: (new RegExp('пятниц.?', 'i')).test(message.text),
 		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
 		oleg: (new RegExp('^олег$', 'i')).test(message.text),
-		friday: now.getDay() === 5,
+		nowFriday: now.getDay() === 5,
 	};
 }
 
@@ -204,9 +224,17 @@ function processing(message: any) {
 
 	console.log(`processing...\n${message.text}`);
 
-	if (info.boobs) {
+	if (info.boobs || info.friday) {
 		sendMessage(message,
-			info.friday ? boobs() : skipBoobs()
+			(
+				info.nowFriday
+				? boobs()
+				: (
+						info.friday
+						? skipFriday()
+						: skipBoobs()
+					)
+			)
 		);
 	} else if (info.butts) {
 		sendMessage(message, butts());
@@ -218,7 +246,8 @@ function processing(message: any) {
 app.post("/ronin-bot", (req: Request, res: Response) => {
 	//console.log(req);
 	//console.log(req.headers);
-	console.log(req.body);
+	//console.log(req.body);
+	console.log(util.inspect(req.body, { showHidden: true, depth: null }));
 
 	processing(req.body.message);
 
