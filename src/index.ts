@@ -200,11 +200,10 @@ function oleg() {
 function getInfo(message: any) {
 	const now = new Date();
 
-	// TODO реагировать на упоминание
-	/*
-	0|bot  | 2024-09-25T19:11:30:     text: '@Ronin37Bot ок',
-	0|bot  | 2024-09-25T19:11:30:     entities: [ { offset: 0, length: 11, type: 'mention' }, [length]: 1 ]
-	*/
+	const mention = Array.isArray(message.entities)
+		? !!message.entities.find((ent: any) => ent.type === 'mention' && message.text.substring(ent.offset, ent.offset + ent.length) === process.env.BOT)
+		: false
+	;
 
 	return {
 		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(message.text),
@@ -212,6 +211,8 @@ function getInfo(message: any) {
 		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
 		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(message.text),
 		nowFriday: now.getDay() === 5,
+		mention: mention,
+		me: String(message.from.id) === process.env.ME,
 	};
 }
 
@@ -222,9 +223,13 @@ function processing(message: any) {
 
 	const info = getInfo(message);
 
-	console.log(`processing...\n${message.text}`);
+	//console.log(`processing...\n${message.text}`);
+	console.log(util.inspect(info, { showHidden: true, depth: null }));
 
-	if (info.boobs || info.friday) {
+	if (info.mention) {
+		sendMessage(message, info.me ? 'Слушаюсь и повинуюсь, мой повелитель!' : 'Ты кто такой? Давай досвиданья!');
+	}
+	else if (info.boobs || info.friday) {
 		sendMessage(message,
 			(
 				info.nowFriday
