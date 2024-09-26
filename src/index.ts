@@ -210,7 +210,7 @@ function getInfo(message: any) {
 		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(message.text),
 		friday: (new RegExp('пятниц.?', 'i')).test(message.text),
 		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
-		oleg: (new RegExp('^олег$', 'i')).test(message.text),
+		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(message.text),
 		nowFriday: now.getDay() === 5,
 	};
 }
