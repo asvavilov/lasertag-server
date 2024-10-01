@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
-import { boobs, butts, oleg, skipBoobs, skipFriday } from "./db";
+import { boobs, butts, oboobs, oleg, skipBoobs, skipFriday } from "./db";
 
 dotenv.config();
 
@@ -9,26 +9,6 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
-
-/*
-app.get("/ronin-bot", (req: Request, res: Response) => {
-	console.log(process.env)
-	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendMessage`;
-	const text = 'hello from express';
-	console.log(url)
-	fetch(url, {
-		method: 'POST',
-		headers: {
-      'Content-Type': 'application/json'
-    },
-		body: JSON.stringify({
-			chat_id: process.env.TEST_GROUP,
-			text: text
-		})
-	});
-	res.send();
-});
-*/
 
 function sendMessage(message: any, text: string) {
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendMessage`;
@@ -39,8 +19,27 @@ function sendMessage(message: any, text: string) {
     },
 		body: JSON.stringify({
 			chat_id: message.chat.id,
-			reply_to_message_id: ['group', 'supergroup'].includes(message.chat.type) ? message.message_id : undefined,
+			reply_parameters: ['group', 'supergroup'].includes(message.chat.type) ? {
+				message_id: message.message_id,
+			} : undefined,
 			text: text
+		})
+	});
+}
+
+function sendPhoto(message: any, photo: string) {
+	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendPhoto`;
+	fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			chat_id: message.chat.id,
+			reply_parameters: ['group', 'supergroup'].includes(message.chat.type) ? {
+				message_id: message.message_id,
+			} : undefined,
+			photo: photo,
 		})
 	});
 }
@@ -51,8 +50,8 @@ function validAge(message: any) {
 }
 
 function validSource(message: any) {
-	return [process.env.ME].includes(String(message.from.id))
-		|| [process.env.TEST_GROUP, process.env.RONIN_GROUP].includes(String(message.chat.id))
+	//[process.env.ME].includes(String(message.from.id))
+	return [process.env.ME, process.env.TEST_GROUP, process.env.RONIN_GROUP].includes(String(message.chat.id))
 	;
 }
 
@@ -98,19 +97,25 @@ function processing(message: any) {
 
 	if (info.mention) {
 		sendMessage(message, info.me ? 'Слушаюсь и повинуюсь, мой повелитель!' : 'Ты кто такой? Давай досвиданья!');
-	}
-	else if (info.boobs || info.friday) {
-		sendMessage(message,
-			(
-				info.nowFriday
-				? boobs()
-				: (
-						info.friday
-						? skipFriday()
-						: skipBoobs()
-					)
-			)
-		);
+	} else if (info.boobs || info.friday) {
+		if (info.nowFriday || [process.env.ME].includes(String(message.chat.id))) {
+			if (info.me) {
+				oboobs().then((result) => {
+					const item = result[0];
+					sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
+				});
+			} else {
+				sendMessage(message, boobs());
+			}
+		} else {
+			sendMessage(message,
+				(
+					info.friday
+					? skipFriday()
+					: skipBoobs()
+				)
+			);
+		}
 	} else if (info.butts) {
 		sendMessage(message, butts());
 	} else if (info.oleg) {

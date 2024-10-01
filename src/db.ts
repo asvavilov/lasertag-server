@@ -52,6 +52,35 @@ export function boobs() {
 	return vars[Math.floor(Math.random() * vars.length)];
 }
 
+export function oboobs() {
+/*
+TODO сиськи (и попки для мужского чата)
+http://api.oboobs.ru/
+https://media.oboobs.ru
+https://media.oboobs.ru/boobs_preview/19733.jpg
+https://media.oboobs.ru/boobs/19733.jpg
+https://media.oboobs.ru/noise_preview/22423.png
+https://media.oboobs.ru/noise/22423.png
+сигнал: http://api.oboobs.ru/boobs/0/1/random/
+шум: http://api.oboobs.ru/noise/1/
+*/
+	return fetch(
+		Math.round(Math.random() * 2) == 0
+			? 'http://api.oboobs.ru/noise/1/'
+			: 'http://api.oboobs.ru/boobs/0/1/random/'
+		,
+		{
+			method: 'GET',
+			signal: AbortSignal.timeout(5000)
+		}
+	).then(response => response.json()).then(result => {
+		if (!Array.isArray(result) && result.length > 0) {
+			throw Error("unexpected response:\n" + JSON.stringify(result));
+		}
+		return result;
+	});
+}
+
 export function butts() {
 	const vars = [
 		'🫱( ‿ * ‿ )🫲',
