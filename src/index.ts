@@ -1,7 +1,8 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
-import { boobs, butts, oboobs, oleg, skipBoobs, skipFriday } from "./db";
+//import cron from 'node-cron';
+import { boobs, butts, oboobs, oleg, skipBoobs, skipFriday } from "./variants";
 
 dotenv.config();
 
@@ -9,6 +10,12 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+/*
+cron.schedule('* * * * *', () => {
+	console.log('running a task every minute');
+});
+*/
 
 function sendMessage(message: any, text: string) {
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendMessage`;
