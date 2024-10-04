@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
-import { boobs, butts, oboobs, oleg, skipBoobs, skipFriday } from "./variants";
+import { boobs, butts, oboobs, oleg, skipFriday } from "./variants";
 
 dotenv.config();
 
@@ -105,21 +105,17 @@ function processing(message: any) {
 	if (info.mention) {
 		sendMessage(message, info.me ? 'Слушаюсь и повинуюсь, мой повелитель!' : 'Ты кто такой? Давай досвиданья!');
 	} else if (info.boobs || info.friday) {
-		if (info.nowFriday || [process.env.ME].includes(String(message.chat.id))) {
-			if (info.me) {
-				oboobs().then((result) => {
-					const item = result[0];
-					sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
-				});
-			} else {
-				sendMessage(message, boobs());
-			}
+		if (info.nowFriday) {
+			oboobs().then((result) => {
+				const item = result[0];
+				sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
+			});
 		} else {
 			sendMessage(message,
 				(
 					info.friday
 					? skipFriday()
-					: skipBoobs()
+					: boobs()
 				)
 			);
 		}

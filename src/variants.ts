@@ -9,20 +9,6 @@ export function skipFriday() {
 	return vars[Math.floor(Math.random() * vars.length)];
 }
 
-export function skipBoobs() {
-	const vars = [
-		'Сегодня не пятница.',
-		'Сегодня сисек не завезли. Заходите в пятницу.',
-		'В пятницу получишь.',
-		'╭∩╮( •̀_•́ )╭∩╮',
-		'¯\\_(ツ)_/¯',
-		'╮ (. ❛ ᴗ ❛.) ╭',
-		'👅',
-		'(＾◡＾)っ✂╰⋃╯',
-	];
-	return vars[Math.floor(Math.random() * vars.length)];
-}
-
 export function boobs() {
 	const vars = [
 		'(.)(.)',
@@ -48,6 +34,7 @@ export function boobs() {
 		'(͜ₒ ㅅ ͜ ₒ)',
 		'🍒',
 		'(   +   )   (   +   )',
+		'(＾◡＾)っ✂╰⋃╯',
 	];
 	return vars[Math.floor(Math.random() * vars.length)];
 }
