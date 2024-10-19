@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
 import { boobs, butts, oboobs, oleg, skipFriday } from "./variants";
+import path from "path";
+import * as fs from 'node:fs';
+import readline from 'node:readline';
 
 dotenv.config();
 
@@ -16,6 +19,60 @@ cron.schedule('* * * * *', () => {
 	console.log('running a task every minute');
 });
 */
+
+
+// TODO разнести по папкам и файлам
+
+
+// гео
+
+async function readLog() {
+	const db: any[] = [];
+
+	const fileStream = fs.createReadStream(path.join(__dirname + '/../bot-geo.log'));
+
+	const rl = readline.createInterface({
+		input: fileStream,
+		crlfDelay: Infinity,
+	});
+	// Note: we use the crlfDelay option to recognize all instances of CR LF
+	// ('\r\n') in input.txt as a single line break.
+
+	let buf = '';
+	for await (const rawLine of rl) {
+		const line = rawLine.replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}: /, '');
+		buf += line;
+		if (line === '}') {
+			//console.log(buf);
+			const item = {
+				date: Number(buf.match(/edit_date: (\d+)/)?.[1] || buf.match(/date: (\d+)/)?.[1]),
+				latitude: Number(buf.match(/latitude: ([\d.]+)/)?.[1]),
+				longitude: Number(buf.match(/longitude: ([\d.]+)/)?.[1]),
+				heading: Number(buf.match(/heading: (\d+)/)?.[1]),
+				horizontal_accuracy: Number(buf.match(/horizontal_accuracy: (\d+)/)?.[1]),
+			};
+			db.push(item);
+			// TODO если логировать в json, то получается такой же не стандартный, но в одну строку
+			//db.push(JSON.parse(buf));
+			buf = '';
+		}
+	}
+
+	return db;
+}
+
+app.post("/ronin/geo", async (req: Request, res: Response) => {
+	// TODO чтение лога (или для оптимзации можно один раз читать при запуске)
+	res.send(await readLog());
+});
+
+
+/// приложение бота
+
+app.use('/ronin/bot-app/', express.static(path.join(__dirname, '../../client/dist/spa')));
+
+
+/// бот
 
 function sendMessage(message: any, text: string) {
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendMessage`;
@@ -126,7 +183,7 @@ function processing(message: any) {
 	}
 }
 
-app.post("/ronin-bot", (req: Request, res: Response) => {
+app.post("/ronin/bot", (req: Request, res: Response) => {
 	//console.log(req);
 	//console.log(req.headers);
 	//console.log(req.body);
@@ -136,6 +193,7 @@ app.post("/ronin-bot", (req: Request, res: Response) => {
 
 	res.send();
 });
+
 
 app.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);

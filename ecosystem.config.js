@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: 'bot',
+    name: 'server',
     script: 'dist/index.js',
     watch: ['dist'],
     time: true,
