@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
-import { boobs, butts, oboobs, oleg, skipFriday } from "./variants";
+import { boobs, borisich, butts, oboobs, oleg, skipFriday } from "./variants";
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
@@ -143,6 +143,9 @@ function getInfo(message: any) {
 		friday: (new RegExp('пятниц.?', 'i')).test(message.text),
 		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
 		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(message.text),
+		borisich: (new RegExp('борисыч', 'i')).test(message.text),
+		com: (new RegExp('командир', 'i')).test(message.text),
+		good: (new RegExp('м[ао]лодец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(message.text),
 		nowFriday: now.getDay() === 5,
 		mention: mention,
 		me: String(message.from.id) === process.env.ME,
@@ -180,6 +183,8 @@ function processing(message: any) {
 		sendMessage(message, butts());
 	} else if (info.oleg) {
 		sendMessage(message, oleg());
+	} else if ((info.borisich || info.com) && info.good) {
+		sendPhoto(message, borisich());
 	}
 }
 

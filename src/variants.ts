@@ -144,3 +144,113 @@ export function oleg() {
 	];
 	return vars[Math.floor(Math.random() * vars.length)];
 }
+
+export function borisich() {
+	const photos = {
+		/*
+		{
+			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADcwADNgQ',
+			file_unique_id: 'AQADYOcxG2pMoEp4',
+			file_size: 1461,
+			width: 90,
+			height: 90
+		},
+		{
+			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADbQADNgQ',
+			file_unique_id: 'AQADYOcxG2pMoEpy',
+			file_size: 21298,
+			width: 320,
+			height: 320
+		},
+		{
+			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADeAADNgQ',
+			file_unique_id: 'AQADYOcxG2pMoEp9',
+			file_size: 62691,
+			width: 640,
+			height: 640
+		},
+		*/
+		nimb: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADbQADNgQ',
+		/*
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADcwADNgQ',
+		  file_unique_id: 'AQADbOcxG2pMoEp4',
+		  file_size: 1995,
+		  width: 90,
+		  height: 90
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADbQADNgQ',
+		  file_unique_id: 'AQADbOcxG2pMoEpy',
+		  file_size: 26895,
+		  width: 320,
+		  height: 320
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADeAADNgQ',
+		  file_unique_id: 'AQADbOcxG2pMoEp9',
+		  file_size: 83721,
+		  width: 640,
+		  height: 640
+		},
+		*/
+		down: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADbQADNgQ',
+		/*
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADcwADNgQ',
+		  file_unique_id: 'AQADdOcxG2pMoEp4',
+		  file_size: 2380,
+		  width: 90,
+		  height: 90
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADbQADNgQ',
+		  file_unique_id: 'AQADdOcxG2pMoEpy',
+		  file_size: 35007,
+		  width: 320,
+		  height: 320
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADeAADNgQ',
+		  file_unique_id: 'AQADdOcxG2pMoEp9',
+		  file_size: 118879,
+		  width: 640,
+		  height: 640
+		},
+		*/
+		b37: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADbQADNgQ',
+		/*
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADcwADNgQ',
+		  file_unique_id: 'AQADdecxG2pMoEp4',
+		  file_size: 1034,
+		  width: 40,
+		  height: 90
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADbQADNgQ',
+		  file_unique_id: 'AQADdecxG2pMoEpy',
+		  file_size: 13549,
+		  width: 144,
+		  height: 320
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeAADNgQ',
+		  file_unique_id: 'AQADdecxG2pMoEp9',
+		  file_size: 53781,
+		  width: 360,
+		  height: 800
+		},
+		{
+		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeQADNgQ',
+		  file_unique_id: 'AQADdecxG2pMoEp-',
+		  file_size: 95894,
+		  width: 576,
+		  height: 1280
+		},
+		*/
+		v: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeAADNgQ',
+	};
+
+	return photos[Object.keys(photos)[Math.floor(Math.random() * Object.keys(photos).length)] as keyof typeof photos];
+}
