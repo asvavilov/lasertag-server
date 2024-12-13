@@ -145,6 +145,21 @@ export function oleg() {
 	return vars[Math.floor(Math.random() * vars.length)];
 }
 
+export function giphy(search: string) {
+	return fetch(
+		`https://api.giphy.com/v1/gifs/random?api_key=${process.env.GIPHY_API_KEY}&tag=${search}`,
+		{
+			method: 'GET',
+			signal: AbortSignal.timeout(5000)
+		}
+	).then(response => response.json()).then(result => {
+		if (!Array.isArray(result) && result.length > 0) {
+			throw Error("unexpected response:\n" + JSON.stringify(result));
+		}
+		return result;
+	});
+}
+
 export function borisich() {
 	const photos = {
 		/*

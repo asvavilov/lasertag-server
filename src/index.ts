@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
-import { boobs, borisich, butts, oboobs, oleg, skipFriday } from "./variants";
+import { boobs, borisich, butts, giphy, oboobs, oleg, skipFriday } from "./variants";
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
@@ -108,6 +108,23 @@ function sendPhoto(message: any, photo: string) {
 	});
 }
 
+function sendVideo(message: any, video: string) {
+	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendVideo`;
+	fetch(url, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			chat_id: message.chat.id,
+			reply_parameters: ['group', 'supergroup'].includes(message.chat.type) ? {
+				message_id: message.message_id,
+			} : undefined,
+			video: video,
+		})
+	});
+}
+
 function validAge(message: any) {
 	const now = (new Date()).getTime() / 1000;
 	return now < message.date + 10;
@@ -182,7 +199,13 @@ function processing(message: any) {
 	} else if (info.butts) {
 		sendMessage(message, butts());
 	} else if (info.oleg) {
-		sendMessage(message, oleg());
+		if (info.nowFriday) {
+			giphy('bodybuilder').then((result) => {
+				sendVideo(message, result['data']['images']['downsized_medium']['url']);
+			});
+		} else {
+			sendMessage(message, oleg());
+		}
 	} else if ((info.borisich || info.com) && info.good) {
 		sendPhoto(message, borisich());
 	}
