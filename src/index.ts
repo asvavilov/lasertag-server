@@ -139,8 +139,8 @@ function validSource(message: any) {
 function canParse(message: any) {
 	return !!message
 		&& !message.from.is_bot // бот
-		&& !!message.text
-		&& !message.message_thread_id // ответ
+		&& (!!message.text || !!message.caption)
+		//&& !message.message_thread_id // ответ
 		&& !message.link_preview_options // ссылка
 		&& validSource(message) // правильная группа или пользователь
 		&& validAge(message) // не слишком ли старое
@@ -155,14 +155,16 @@ function getInfo(message: any) {
 		: false
 	;
 
+	const text = message.text || message.caption;
+
 	return {
-		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(message.text),
-		friday: (new RegExp('пятниц.?', 'i')).test(message.text),
-		butts: (new RegExp('жоп[ауеы]', 'i')).test(message.text),
-		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(message.text),
-		borisich: (new RegExp('борисыч', 'i')).test(message.text),
-		com: (new RegExp('командир', 'i')).test(message.text),
-		good: (new RegExp('м[ао]лодец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(message.text),
+		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(text),
+		friday: (new RegExp('пятни[цч].?', 'i')).test(text),
+		butts: (new RegExp('жоп[ауеы]', 'i')).test(text),
+		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(text),
+		borisich: (new RegExp('борисыч', 'i')).test(text),
+		com: (new RegExp('командир', 'i')).test(text),
+		good: (new RegExp('м[ао]лодец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(text),
 		nowFriday: now.getDay() === 5,
 		mention: mention,
 		me: String(message.from.id) === process.env.ME,
