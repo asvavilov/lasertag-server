@@ -164,7 +164,7 @@ function getInfo(message: any) {
 		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(text),
 		borisich: (new RegExp('борисыч', 'i')).test(text),
 		com: (new RegExp('командир', 'i')).test(text),
-		good: (new RegExp('м[ао]лодец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(text),
+		good: (new RegExp('м[ао]л[ао]]дец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(text),
 		nowFriday: now.getDay() === 5,
 		mention: mention,
 		me: String(message.from.id) === process.env.ME,
