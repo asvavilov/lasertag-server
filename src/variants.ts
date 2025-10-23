@@ -68,6 +68,21 @@ https://media.oboobs.ru/noise/22423.png
 	});
 }
 
+export function obutts() {
+	return fetch(
+		'http://api.obutts.ru/butts/0/1/random/',
+		{
+			method: 'GET',
+			signal: AbortSignal.timeout(5000)
+		}
+	).then(response => response.json()).then(result => {
+		if (!Array.isArray(result) && result.length > 0) {
+			throw Error("unexpected response:\n" + JSON.stringify(result));
+		}
+		return result;
+	});
+}
+
 export function butts() {
 	const vars = [
 		'🫱( ‿ * ‿ )🫲',

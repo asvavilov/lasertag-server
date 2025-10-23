@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
-import { boobs, borisich, butts, giphy, oboobs, oleg, skipFriday } from "./variants";
+import { boobs, borisich, butts, giphy, oboobs, obutts, oleg, skipFriday } from "./variants";
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
@@ -132,8 +132,11 @@ function validAge(message: any) {
 
 function validSource(message: any) {
 	//[process.env.ME].includes(String(message.from.id))
-	return [process.env.ME, process.env.TEST_GROUP, process.env.RONIN_GROUP].includes(String(message.chat.id))
-	;
+	return [process.env.ME, process.env.TEST_GROUP, process.env.RONIN_GROUP, process.env.MEN_GROUP].includes(String(message.chat.id));
+}
+
+function isUncen(message: any) {
+	return [process.env.ME, process.env.TEST_GROUP, process.env.MEN_GROUP].includes(String(message.chat.id));
 }
 
 function canParse(message: any) {
@@ -181,10 +184,12 @@ function processing(message: any) {
 	//console.log(`processing...\n${message.text}`);
 	console.log(util.inspect(info, { showHidden: true, depth: null }));
 
+	const uncen = isUncen(message);
+
 	if (info.mention) {
 		sendMessage(message, info.me ? 'Слушаюсь и повинуюсь, мой повелитель!' : 'Ты кто такой? Давай досвиданья!');
 	} else if (info.boobs || info.friday) {
-		if (info.nowFriday) {
+		if (info.nowFriday || uncen) {
 			oboobs().then((result) => {
 				const item = result[0];
 				sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
@@ -199,7 +204,14 @@ function processing(message: any) {
 			);
 		}
 	} else if (info.butts) {
-		sendMessage(message, butts());
+		if (uncen) {
+			obutts().then((result) => {
+				const item = result[0];
+				sendPhoto(message, 'https://media.obutts.ru/' + item['preview']);
+			});
+		} else {
+			sendMessage(message, butts());
+		}
 	} else if (info.oleg) {
 		if (info.nowFriday) {
 			giphy('bodybuilder').then((result) => {
