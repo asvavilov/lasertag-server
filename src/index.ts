@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
-import { boobs, borisich, butts, giphy, oboobs, obutts, oleg, skipFriday } from "./variants";
+import { boobs, borisich, butts, giphy, oboobs, obutts, oleg, nooleg, skipFriday } from "./variants";
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
@@ -163,7 +163,7 @@ function getInfo(message: any) {
 	return {
 		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(text),
 		friday: (new RegExp('пятни[цч].?', 'i')).test(text),
-		butts: (new RegExp('жоп[ауеы]', 'i')).test(text),
+		butts: (new RegExp('(?<![а-яё])[пж]оп[ауеы].?(?![а-яё])', 'i')).test(text),
 		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(text),
 		borisich: (new RegExp('борисыч', 'i')).test(text),
 		com: (new RegExp('командир', 'i')).test(text),
@@ -213,7 +213,9 @@ function processing(message: any) {
 			sendMessage(message, butts());
 		}
 	} else if (info.oleg) {
-		if (info.nowFriday) {
+		if (uncen) {
+			sendPhoto(message, nooleg());
+		} else if (info.nowFriday) {
 			giphy('bodybuilder').then((result) => {
 				sendVideo(message, result['data']['images']['downsized_medium']['url']);
 			});

@@ -160,6 +160,16 @@ export function oleg() {
 	return vars[Math.floor(Math.random() * vars.length)];
 }
 
+export function nooleg() {
+	const photos = {
+		boobs: 'AgACAgIAAyEFAASRmkyUAAMPaPqDsx2uklw6J2GUinmSdaIiu6gAAhXyMRvI4ZBJIeTbNI15ZBABAAMCAANtAAM2BA',
+		babka: 'AgACAgIAAyEFAASRmkyUAAMTaPqELj697ZNsWv6jQKLk-hrHVG4AAmniMRs9I5hKpzA8Sl4AAXQdAQADAgADbQADNgQ',
+		mustache: 'AgACAgIAAyEFAASRmkyUAAMWaPqETCRu10ReuSRPHngBGK5O6OcAAjPeMRsM2blJ58y78401R58BAAMCAANtAAM2BA',
+	};
+
+	return photos[Object.keys(photos)[Math.floor(Math.random() * Object.keys(photos).length)] as keyof typeof photos];
+}
+
 export function giphy(search: string) {
 	return fetch(
 		`https://api.giphy.com/v1/gifs/random?api_key=${process.env.GIPHY_API_KEY}&tag=${search}`,
