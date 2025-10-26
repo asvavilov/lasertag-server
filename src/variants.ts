@@ -1,3 +1,16 @@
+/*
+video borisichda:
+BAACAgIAAyEFAASRmkyUAAMOaP5iRgtC1UcrtbWwbnLGpsEQbicAAs5bAAKjypFKkV7Tpo7HWQg2BA
+video nenashi:
+BAACAgIAAyEFAASRmkyUAAM-aPtT9xAUDxJ8Cjcne6c1Svflkc0AAhKDAAKdEGFLk2vjV5q-cgo2BA
+video osechka:
+BAACAgIAAyEFAASRmkyUAAMVaP5gFdGAeUtFx-NDwabH3MFxDDwAAlZOAAJFDelJLSIuMCMRDq82BA
+video rody:
+BAACAgIAAyEFAASRmkyUAAM9aPtT3tXc-43290gFVT9-N9Rk2q8AAoaDAAJNDplLpBihpJj1NEM2BA
+video aplodismenty:
+CgACAgIAAyEFAASRmkyUAAMbaP5gu7sQe9kO54dk09yZUWbCbSAAAjSHAAJ_IVFIdxsk0xqGfck2BA
+*/
+
 export function skipFriday() {
 	const vars = [
 		'Сегодня не пятница.',
@@ -165,6 +178,11 @@ export function nooleg() {
 		boobs: 'AgACAgIAAyEFAASRmkyUAAMPaPqDsx2uklw6J2GUinmSdaIiu6gAAhXyMRvI4ZBJIeTbNI15ZBABAAMCAANtAAM2BA',
 		babka: 'AgACAgIAAyEFAASRmkyUAAMTaPqELj697ZNsWv6jQKLk-hrHVG4AAmniMRs9I5hKpzA8Sl4AAXQdAQADAgADbQADNgQ',
 		mustache: 'AgACAgIAAyEFAASRmkyUAAMWaPqETCRu10ReuSRPHngBGK5O6OcAAjPeMRsM2blJ58y78401R58BAAMCAANtAAM2BA',
+		pistolet: 'AgACAgIAAyEFAASRmkyUAAM6aPtTeL_bYZnqU3m4kd2ON4VQpHoAApj5MRvYduBL-VJ_hO_5WuEBAAMCAAN4AAM2BA',
+		nebudu: 'AgACAgIAAyEFAASRmkyUAAM7aPtTeNoAAb4UJh6Frhsm4c1dK3gJAAKa-TEb2HbgSyJpo9X0iItxAQADAgADeAADNgQ',
+		tobipizda: 'AgACAgIAAyEFAASRmkyUAAM8aPtTeMDFIy9aUfRPidq0HMM8mVcAApv5MRvYduBL7g2kfc159FABAAMCAAN4AAM2BA',
+		krestny: 'AgACAgIAAyEFAASRmkyUAAM_aPtUroyAgV97INMePrYri4U_FxMAApr2MRt6sllLF_kQZDxDeTABAAMCAAN4AAM2BA',
+		babkamulti: 'AgACAgIAAyEFAASRmkyUAANAaPv0FViS9mExfaYszFWBSrlpUYMAAnj4MRtrIuFL-oEqfJpo5scBAAMCAAN4AAM2BA',
 	};
 
 	return photos[Object.keys(photos)[Math.floor(Math.random() * Object.keys(photos).length)] as keyof typeof photos];
@@ -187,108 +205,9 @@ export function giphy(search: string) {
 
 export function borisich() {
 	const photos = {
-		/*
-		{
-			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADcwADNgQ',
-			file_unique_id: 'AQADYOcxG2pMoEp4',
-			file_size: 1461,
-			width: 90,
-			height: 90
-		},
-		{
-			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADbQADNgQ',
-			file_unique_id: 'AQADYOcxG2pMoEpy',
-			file_size: 21298,
-			width: 320,
-			height: 320
-		},
-		{
-			file_id: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADeAADNgQ',
-			file_unique_id: 'AQADYOcxG2pMoEp9',
-			file_size: 62691,
-			width: 640,
-			height: 640
-		},
-		*/
 		nimb: 'AgACAgIAAxkBAAIBFmdUpjs_X2q0Y6u0JesOjD2Zq82HAAJg5zEbakygSi5TCRT4BvULAQADAgADbQADNgQ',
-		/*
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADcwADNgQ',
-		  file_unique_id: 'AQADbOcxG2pMoEp4',
-		  file_size: 1995,
-		  width: 90,
-		  height: 90
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADbQADNgQ',
-		  file_unique_id: 'AQADbOcxG2pMoEpy',
-		  file_size: 26895,
-		  width: 320,
-		  height: 320
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADeAADNgQ',
-		  file_unique_id: 'AQADbOcxG2pMoEp9',
-		  file_size: 83721,
-		  width: 640,
-		  height: 640
-		},
-		*/
 		down: 'AgACAgIAAxkBAAIBGGdUqBVys0UCqw1NddKmGDSAZQsdAAJs5zEbakygSl7q3qYKwTHuAQADAgADbQADNgQ',
-		/*
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADcwADNgQ',
-		  file_unique_id: 'AQADdOcxG2pMoEp4',
-		  file_size: 2380,
-		  width: 90,
-		  height: 90
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADbQADNgQ',
-		  file_unique_id: 'AQADdOcxG2pMoEpy',
-		  file_size: 35007,
-		  width: 320,
-		  height: 320
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADeAADNgQ',
-		  file_unique_id: 'AQADdOcxG2pMoEp9',
-		  file_size: 118879,
-		  width: 640,
-		  height: 640
-		},
-		*/
 		b37: 'AgACAgIAAxkBAAIBGWdUqQ_V1QE40o2cQdWVknzp379KAAJ05zEbakygSrneAlXFx6yMAQADAgADbQADNgQ',
-		/*
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADcwADNgQ',
-		  file_unique_id: 'AQADdecxG2pMoEp4',
-		  file_size: 1034,
-		  width: 40,
-		  height: 90
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADbQADNgQ',
-		  file_unique_id: 'AQADdecxG2pMoEpy',
-		  file_size: 13549,
-		  width: 144,
-		  height: 320
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeAADNgQ',
-		  file_unique_id: 'AQADdecxG2pMoEp9',
-		  file_size: 53781,
-		  width: 360,
-		  height: 800
-		},
-		{
-		  file_id: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeQADNgQ',
-		  file_unique_id: 'AQADdecxG2pMoEp-',
-		  file_size: 95894,
-		  width: 576,
-		  height: 1280
-		},
-		*/
 		v: 'AgACAgIAAxkBAAIBGmdUqStTNijS0idtHURv3Q9fSa7HAAJ15zEbakygSqVkTpkLwsgpAQADAgADeAADNgQ',
 	};
 
