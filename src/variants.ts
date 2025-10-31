@@ -9,6 +9,8 @@ video rody:
 BAACAgIAAyEFAASRmkyUAAM9aPtT3tXc-43290gFVT9-N9Rk2q8AAoaDAAJNDplLpBihpJj1NEM2BA
 video aplodismenty:
 CgACAgIAAyEFAASRmkyUAAMbaP5gu7sQe9kO54dk09yZUWbCbSAAAjSHAAJ_IVFIdxsk0xqGfck2BA
+video krestny:
+BAACAgIAAx0CaIljbAABAbr2aQLzmseD-JdFF8UCqL_T3tby_8MAArKAAAK8KhlIO7JHFDTKrBk2BA
 */
 
 export function skipFriday() {
