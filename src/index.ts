@@ -6,11 +6,12 @@ import { boobs, borisich, butts, giphy, oboobs, obutts, oleg, nooleg, skipFriday
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
+import https from 'node:https';
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
@@ -228,6 +229,9 @@ function processing(message: any) {
 }
 
 app.post("/ronin/bot", (req: Request, res: Response) => {
+
+	// TODO проверять заголовок X-Telegram-Bot-Api-Secret-Token и сравнивать с ../../.ssl/secret_token
+
 	//console.log(req);
 	//console.log(req.headers);
 	//console.log(req.body);
@@ -238,7 +242,12 @@ app.post("/ronin/bot", (req: Request, res: Response) => {
 	res.send();
 });
 
+const options = {
+	key: fs.readFileSync(path.join(__dirname, '../../.ssl/key.pem')),
+	cert: fs.readFileSync(path.join(__dirname, '../../.ssl/cert.pem'))
+};
+const server = https.createServer(options, app);
 
-app.listen(port, () => {
+server.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);
 });
