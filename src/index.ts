@@ -230,7 +230,10 @@ function processing(message: any) {
 
 app.post("/ronin/bot", (req: Request, res: Response) => {
 
-	// TODO проверять заголовок X-Telegram-Bot-Api-Secret-Token и сравнивать с ../../.ssl/secret_token
+	if (secret_token !== req.get('X-Telegram-Bot-Api-Secret-Token')) {
+		res.send();
+		return;
+	}
 
 	//console.log(req);
 	//console.log(req.headers);
@@ -242,6 +245,7 @@ app.post("/ronin/bot", (req: Request, res: Response) => {
 	res.send();
 });
 
+const secret_token = fs.readFileSync(path.join(__dirname, '../../.ssl/secret_token')).toString().trim();
 const options = {
 	key: fs.readFileSync(path.join(__dirname, '../../.ssl/key.pem')),
 	cert: fs.readFileSync(path.join(__dirname, '../../.ssl/cert.pem'))
