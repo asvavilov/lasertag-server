@@ -267,13 +267,16 @@ const vk = new VK({
 app.post("/ronin/vkbot", async (req: Request, res: Response) => {
 	console.log(util.inspect(req.body, { showHidden: true, depth: null }));
 
-	if (!checkSecret(req.body)) {
-		res.status(403).send();
+	// Подтверждение адреса сервера (Callback API) обрабатываем ДО проверки secret:
+	// VK может прислать confirmation без поля secret (см. пример в док. VK), и тогда
+	// строгая проверка ниже вернула бы 403 и подтверждение не прошло. Возвращаем VK_CONFIRM.
+	if (checkConfirmation(req.body)) {
+		res.send(process.env.VK_CONFIRM);
 		return;
 	}
 
-	if (checkConfirmation(req.body)) {
-		res.send(process.env.VK_CONFIRM);
+	if (!checkSecret(req.body)) {
+		res.status(403).send();
 		return;
 	}
 
