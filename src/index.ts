@@ -7,11 +7,13 @@ import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
 import { VK } from 'vk-io';
+import https from 'node:https';
+import { saveHistory, saveSent, cleanupHistory } from './history';
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8443;
 
 app.use(express.json());
 
@@ -76,6 +78,7 @@ app.use('/ronin/bot-app/', express.static(path.join(__dirname, '../../client/dis
 /// бот
 
 function sendMessage(message: any, text: string) {
+	saveSent(message.chat, 'text', text);
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendMessage`;
 	fetch(url, {
 		method: 'POST',
@@ -93,6 +96,7 @@ function sendMessage(message: any, text: string) {
 }
 
 function sendPhoto(message: any, photo: string) {
+	saveSent(message.chat, 'photo', photo);
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendPhoto`;
 	fetch(url, {
 		method: 'POST',
@@ -110,6 +114,7 @@ function sendPhoto(message: any, photo: string) {
 }
 
 function sendVideo(message: any, video: string) {
+	saveSent(message.chat, 'video', video);
 	const url = `https://api.telegram.org/bot${process.env.BOT_ID}:${process.env.BOT_SECRET}/sendVideo`;
 	fetch(url, {
 		method: 'POST',
@@ -229,10 +234,18 @@ function processing(message: any) {
 }
 
 app.post("/ronin/bot", (req: Request, res: Response) => {
+
+	if (secret_token !== req.get('X-Telegram-Bot-Api-Secret-Token')) {
+		res.send();
+		return;
+	}
+
 	//console.log(req);
 	//console.log(req.headers);
 	//console.log(req.body);
 	console.log(util.inspect(req.body, { showHidden: true, depth: null }));
+
+	saveHistory(req.body);
 
 	processing(req.body.message);
 
@@ -428,9 +441,25 @@ async function uploadPhotoVKIO(imageBuffer: Buffer, peerId: number) {
 }
 
 /// server
+const secret_token = fs.readFileSync(path.join(__dirname, '../../.ssl/secret_token')).toString().trim();
+const options = {
+	key: fs.readFileSync(path.join(__dirname, '../../.ssl/key.pem')),
+	cert: fs.readFileSync(path.join(__dirname, '../../.ssl/cert.pem'))
+};
+const server = https.createServer(options, app);
 
-app.listen(port, () => {
+server.listen(port, () => {
 	console.log(`[server]: Server is running at http://localhost:${port}`);
+
+	// история сообщений: чистка при старте и раз в сутки
+	const removed = cleanupHistory();
+	console.log(`[history]: retention ${process.env.HISTORY_KEEP_DAYS || 30} дней, удалено старых файлов: ${removed}`);
+	setInterval(() => {
+		const n = cleanupHistory();
+		if (n) {
+			console.log(`[history]: удалено старых файлов: ${n}`);
+		}
+	}, 24 * 60 * 60 * 1000);
 });
 
 // Обработка ошибок
