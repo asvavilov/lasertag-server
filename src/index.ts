@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import * as util from 'util';
 //import cron from 'node-cron';
 import { boobs, borisich, butts, giphy, oboobs, obutts, oleg, nooleg, skipFriday } from "./variants";
+import { Reaction, ReactionVariants, ReactionInfo, analyze, pickReaction } from "./reactions";
+import { handleVKWebhook } from "./vk";
 import path from "path";
 import * as fs from 'node:fs';
 import readline from 'node:readline';
-import { VK } from 'vk-io';
 import https from 'node:https';
 import { saveHistory, saveSent, cleanupHistory } from './history';
 
@@ -156,9 +157,9 @@ function canParse(message: any) {
 		;
 }
 
-function getInfo(message: any) {
-	const now = new Date();
-
+// Разбор Telegram-сообщения в общий формат триггеров. Сами реакции выбирает
+// общий модуль ./reactions — тот же, что используется в VK.
+function getInfo(message: any): ReactionInfo {
 	const mention = Array.isArray(message.entities)
 		? !!message.entities.find((ent: any) => ent.type === 'mention' && message.text.substring(ent.offset, ent.offset + ent.length) === process.env.BOT)
 		: false
@@ -166,19 +167,41 @@ function getInfo(message: any) {
 
 	const text = message.text || message.caption;
 
-	return {
-		boobs: (new RegExp('сиськ[ауи]|сисек|титьк[ауи]|титек|сис[яи]', 'i')).test(text),
-		friday: (new RegExp('пятни[цч].?', 'i')).test(text),
-		butts: (new RegExp('(?<![а-яё])[пж]оп[ауеы].?(?![а-яё])', 'i')).test(text),
-		oleg: (new RegExp('(?<![а-яё])олег.?(?![а-яё])', 'i')).test(text),
-		borisich: (new RegExp('борисыч', 'i')).test(text),
-		com: (new RegExp('командир', 'i')).test(text),
-		good: (new RegExp('м[ао]л[ао]дец|м[ао]л[ао]дчина|кр[ао]савчик|кр[ао]савчег|кр[ао]саучег', 'i')).test(text),
-		nowFriday: now.getDay() === 5,
-		mention: mention,
+	return analyze(text, {
+		mention,
 		me: String(message.from.id) === process.env.ME,
-	};
+	});
 }
+
+// Исполнение реакции в Telegram. Картинки/видео Telegram принимает как URL или file_id.
+function executeTelegram(reaction: Reaction, message: any) {
+	switch (reaction.t) {
+		case 'text':
+			return sendMessage(message, reaction.text);
+		case 'photoUrl':
+			return sendPhoto(message, reaction.url);
+		case 'tgPhoto':
+			return sendPhoto(message, reaction.fileId);
+		case 'oboobs':
+			return oboobs().then((result) => {
+				const item = result[0];
+				sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
+			});
+		case 'obutts':
+			return obutts().then((result) => {
+				const item = result[0];
+				sendPhoto(message, 'https://media.obutts.ru/' + item['preview']);
+			});
+		case 'giphy':
+			return giphy(reaction.tag).then((result) => {
+				sendVideo(message, result['data']['images']['downsized_medium']['url']);
+			});
+		default:
+			return;
+	}
+}
+
+const telegramVariants: ReactionVariants = { skipFriday, boobs, butts, oleg, nooleg, borisich };
 
 function processing(message: any) {
 	if (!canParse(message)) {
@@ -190,47 +213,8 @@ function processing(message: any) {
 	//console.log(`processing...\n${message.text}`);
 	console.log(util.inspect(info, { showHidden: true, depth: null }));
 
-	const uncen = isUncen(message);
-
-	if (info.mention) {
-		sendMessage(message, info.me ? 'Слушаюсь и повинуюсь, мой повелитель!' : 'Ты кто такой? Давай досвиданья!');
-	} else if (info.boobs || info.friday) {
-		if (info.nowFriday || uncen) {
-			oboobs().then((result) => {
-				const item = result[0];
-				sendPhoto(message, 'https://media.oboobs.ru/' + item['preview']);
-			});
-		} else {
-			sendMessage(message,
-				(
-					info.friday
-						? skipFriday()
-						: boobs()
-				)
-			);
-		}
-	} else if (info.butts) {
-		if (uncen) {
-			obutts().then((result) => {
-				const item = result[0];
-				sendPhoto(message, 'https://media.obutts.ru/' + item['preview']);
-			});
-		} else {
-			sendMessage(message, butts());
-		}
-	} else if (info.oleg) {
-		if (uncen) {
-			sendPhoto(message, nooleg());
-		} else if (info.nowFriday) {
-			giphy('bodybuilder').then((result) => {
-				sendVideo(message, result['data']['images']['downsized_medium']['url']);
-			});
-		} else {
-			sendMessage(message, oleg());
-		}
-	} else if ((info.borisich || info.com) && info.good) {
-		sendPhoto(message, borisich());
-	}
+	const reaction = pickReaction(info, isUncen(message), telegramVariants);
+	executeTelegram(reaction, message);
 }
 
 app.post("/ronin/bot", (req: Request, res: Response) => {
@@ -254,196 +238,15 @@ app.post("/ronin/bot", (req: Request, res: Response) => {
 
 /// VK
 
-const VK_API_VER = '5.199';
-const VK_TOKEN = process.env.VK_KEY;
-const API_VERSION = VK_API_VER;
-
-//const vkbot = new VkBot(process.env.VK_KEY!);
-// FIXME переписать все на API?
-const vk = new VK({
-	token: VK_TOKEN!
-});
-
 app.post("/ronin/vkbot", async (req: Request, res: Response) => {
 	console.log(util.inspect(req.body, { showHidden: true, depth: null }));
 
-	// Подтверждение адреса сервера (Callback API) обрабатываем ДО проверки secret:
-	// VK может прислать confirmation без поля secret (см. пример в док. VK), и тогда
-	// строгая проверка ниже вернула бы 403 и подтверждение не прошло. Возвращаем VK_CONFIRM.
-	if (checkConfirmation(req.body)) {
-		res.send(process.env.VK_CONFIRM);
-		return;
-	}
-
-	if (!checkSecret(req.body)) {
-		res.status(403).send();
-		return;
-	}
-
-	const { type, object, group_id, secret } = req.body;
-
-	if (type === 'message_new') {
-		const message = object.message;
-		const peerId = message.peer_id;
-		const text = message.text?.toLowerCase() || '';
-		const replyTo = message.conversation_message_id;
-
-		console.log(`Новое сообщение от ${peerId}: ${text}`);
-
-		// Ищем слово "пятница"
-		if (text.includes('пятница')) {
-			console.log('Найдено слово "пятница"! Отправляем картинку...');
-
-			try {
-				// Читаем картинку
-				const imagePath = path.join(__dirname, '..', 'test.jpg');
-				const imageBuffer = fs.readFileSync(imagePath);
-
-				// Загружаем картинку
-				//const photo = await vkUploadPhoto(imageBuffer);
-				const photo = await uploadPhotoVKIO(imageBuffer, peerId);
-				const attachment = `photo${photo.owner_id}_${photo.id}`;
-
-				// Отправляем сообщение с картинкой
-				//await vkSendMessage(peerId, 'Ура! Пятница! 🎉', attachment);
-				await vk.api.messages.send({
-					peer_id: peerId,
-					reply_to: replyTo,
-					message: 'Ура! Пятница! 🎉',
-					attachment: attachment,
-					random_id: Date.now(), // Уникальный ID для избежания дублей
-				});
-			} catch (error) {
-				console.error('Ошибка при отправке картинки:', error);
-				// Отправляем текстовое сообщение в случае ошибки
-				await vkSendMessage(peerId, 'Пятница! Но картинку загрузить не удалось 😢');
-			}
-		}
-	}
-
-	// Дополнительные обработчики типов событий
-	if (type === 'message_reply') {
-		console.log('Ответ на сообщение');
-		// Логика для ответов
-	}
-
-	if (type === 'message_edit') {
-		console.log('Сообщение отредактировано');
-		// Логика для отредактированных сообщений
-	}
-
-	if (type === 'group_join') {
-		console.log('Новый участник вступил в группу');
-		// Приветственное сообщение
-		const userId = object.user_id;
-		await vkSendMessage(userId, 'Добро пожаловать в наше сообщество! 🎉');
-	}
-
-	res.send('ok');
+	const { status, body } = await handleVKWebhook(req.body);
+	res.status(status).send(body);
 });
 
-const checkSecret = (body: Record<string, string | number> | null | undefined) => body?.secret && body?.secret === process.env.VK_SECRET;
-
-const checkConfirmation = (body: Record<string, string | number> | null | undefined) => body?.type && body?.type === 'confirmation' && String(body?.group_id) === process.env.VK_GROUP;
-
-/**
- * Отправка сообщения через VK API
- */
-async function vkSendMessage(peerId: number, message: string, attachment?: string) {
-	try {
-		const params = new URLSearchParams({
-			peer_id: peerId.toString(),
-			message: message,
-			random_id: Date.now().toString(), // Уникальный ID для избежания дублей
-			access_token: process.env.VK_KEY!,
-			v: VK_API_VER
-		});
-
-		if (attachment) {
-			params.append('attachment', attachment);
-		}
-
-		const response = await fetch(`https://api.vk.com/method/messages.send?${params}`);
-		const data = await response.json();
-
-		if (data.error) {
-			console.error('Ошибка VK API:', data.error);
-		} else {
-			console.log(`Сообщение отправлено в чат ${peerId}, ID: ${data.response}`);
-		}
-	} catch (error) {
-		console.error('Ошибка при отправке сообщения:', error);
-	}
-}
-
-async function vkUploadPhoto(imageBuffer: Buffer): Promise<{ owner_id: number; id: number }> {
-	try {
-		// 1. Получаем URL для загрузки
-		const getUploadUrlResponse = await fetch(
-			`https://api.vk.com/method/photos.getMessagesUploadServer?access_token=${VK_TOKEN}&v=${API_VERSION}`
-		);
-		const uploadData = await getUploadUrlResponse.json();
-
-		if (uploadData.error) {
-			throw new Error(`Ошибка получения URL: ${uploadData.error.error_msg}`);
-		}
-
-		const uploadUrl = uploadData.response.upload_url;
-
-		// 2. Загружаем фото
-		const formData = new FormData();
-		const blob = new Blob([new Uint8Array(imageBuffer)], { type: 'image/jpeg' });
-		formData.append('photo', blob, 'test.jpg');
-
-		const uploadResponse = await fetch(uploadUrl, {
-			method: 'POST',
-			body: formData
-		});
-		const uploadResult = await uploadResponse.json();
-		//console.log(util.inspect(uploadResult, { showHidden: true, depth: null }));
-
-		// 3. Сохраняем фото через VK API
-		const saveParams = new URLSearchParams({
-			photo: uploadResult.photo,
-			server: uploadResult.server.toString(),
-			hash: uploadResult.hash,
-			access_token: VK_TOKEN!,
-			v: API_VERSION
-		});
-
-		const saveResponse = await fetch(`https://api.vk.com/method/photos.saveMessagesPhoto?${saveParams}`);
-		const saveResult = await saveResponse.json();
-		//console.log(util.inspect(saveResult, { showHidden: true, depth: null }));
-		const savedPhoto = Array.isArray(saveResult.response)
-			? saveResult.response[0]
-			: saveResult.response;
-
-		return {
-			owner_id: savedPhoto.owner_id,
-			id: savedPhoto.id
-		};
-	} catch (error) {
-		console.error('Ошибка загрузки фото:', error);
-		throw error;
-	}
-}
-
-// TODO см. варианты загрузки картинки
-// https://github.com/negezor/vk-io/blob/master/docs/ru/guide/upload.md
-// TODO читать уже загруженные картинки (заранее куда-то загрузить или как в тг - один раз и потом сохранить)
-async function uploadPhotoVKIO(imageBuffer: Buffer, peerId: number) {
-	const photo = await vk.upload.messagePhoto({
-		source: { value: imageBuffer },
-		peer_id: peerId, // ID чата, куда отправляем
-	});
-
-	return {
-		owner_id: photo.ownerId,
-		id: photo.id
-	};
-}
-
 /// server
+
 const secret_token = fs.readFileSync(path.join(__dirname, '../../.ssl/secret_token')).toString().trim();
 const options = {
 	key: fs.readFileSync(path.join(__dirname, '../../.ssl/key.pem')),
